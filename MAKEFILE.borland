@@ -2,22 +2,27 @@
 # makefile for clipboard, Borland MAKE
 #
 
-# -5      Pentium Instructions
-# -C      Allow nested comments
-# -Ox     Optimizations
-# -d      Merge duplicate strings
-# -Wx     Create Windows app
-# -RT     Generate RTTI
+# -5	Pentium Instructions
+# -C	Allow nested comments
+# -O1	Optimize for Size
+# -O2	Optimize for Speed
+# -d	Merge duplicate strings
+# -RT	Generate RTTI
+# -W	Target is GUI EXE
+# -WC	Target is CUI EXE
+# -WD	Target is DLL
+# -WU	Create UNICODE app
+
 
 PRJ = clipboard
 
-CFLAGS = -5 -C -O1 -d -WU -RT-
+CFLAGS = -5 -C -O1 -d -RT- -w -WC
 RM = del
 
 all: $(PRJ).exe
 
 $(PRJ).exe: $(PRJ).cpp
-	$(CC) $(CFLAGS) -WC $(PRJ).cpp noeh32.lib
+	$(CC) $(CFLAGS) $(PRJ).cpp noeh32.lib
 	upx -q -q --lzma --compress-icons=0 $(PRJ).exe
 
 clean:

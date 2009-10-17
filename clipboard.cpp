@@ -17,7 +17,7 @@
 #define PGM_INFO			PGM ": "
 #define PGM_WARN			PGM " warning: "
 #define PGM_ERR				PGM " error: "
-#define VERSTR				"1.00"
+#define VERSTR				"1.01"
 
 #define CREDIT2009			"Copyright (c) 2009 by opa"
 
@@ -48,8 +48,7 @@ void SetClipboardText(const string &s)
 
 	if((h = ::GlobalAlloc(GHND, s.size()+1)) != NULL){
 		if((sc = (char *)::GlobalLock(h)) != NULL){
-			memcpy(sc, s.c_str(), s.size());
-			sc[s.size()] = '\0';
+			memcpy(sc, s.c_str(), s.size()+1);
 			if(::OpenClipboard(NULL) != 0){
 				::EmptyClipboard();
 				::SetClipboardData(CF_TEXT, h);
@@ -66,17 +65,13 @@ void stdin_to_clipboard()
 		*f = stdin;
 	string
 		cb;
-	int
-		c;
 
 	fflush(f);
 	setmode(fileno(f), O_BINARY);
 
-	while((c = fgetc(f)) != EOF)
+	cb.reserve(65000);
+	for(int c ; (c = fgetc(f)) != EOF ; )
 		cb += (char)c;
-
-	fflush(f);
-	setmode(fileno(f), O_TEXT);
 
 	SetClipboardText(cb);
 }
@@ -115,14 +110,11 @@ void clipboard_to_stdout()
 	setmode(fileno(f), O_BINARY);
 
 	fputs(cb.c_str(), f);
-
-	fflush(f);
-	setmode(fileno(f), O_TEXT);
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-sint wmain(sint, wchar_t *[])
+sint main(sint, char *[])
 {
 	if(!isatty(fileno(stdin)))
 		stdin_to_clipboard();
